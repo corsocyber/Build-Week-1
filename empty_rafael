@@ -1,0 +1,44 @@
+import socket
+
+OPEN_PORTS = [] #viene creata una lista vuota che sara utilizata per memorizzare le porte durante la scnasione 
+
+def scan_port(ip, port):# la funzione prende in input un indirizzo IP e un numero di porte
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)#viene creato un oggetto socket
+    sock.settimeout(1)#viene inpostato uu timeout di 1 secondo per la connessione .
+    try:
+        conn_status = sock.connect_ex((ip, port))# la connesione ha successo , la porta viene aggionte alla lista open_ports
+        if conn_status == 0:
+            OPEN_PORTS.append(port)
+    except socket.error as e:#se si verifica un eccezione, viene stampato un messaggio di errore
+        print(f"Errore durante la scansione della porta {port}: {e}")
+    finally:#infine il socket viene chiuso nel blocco 'finally
+        sock.close()#
+
+def get_host_ip_addr(target):#la funzione prende in input un nome di dominio
+    try:
+        ip_addr = socket.gethostbyname(target)
+        return ip_addr
+    except socket.gaierror as e:
+        print(f"C'è stato un errore durante la risoluzione DNS: {e}")
+
+if __name__ == "__main__":
+    print("")
+    target = input("Inserire Target: ")
+    ip_addr = get_host_ip_addr(target)
+    
+    while True:
+        try:
+            port = int(input("Inserire Porta (0 per uscire): "))
+            if port == 0:
+                print("Exiting...")
+                break
+            scan_port(ip_addr, port)
+            print(f"Porte aperte: {OPEN_PORTS}")
+        except ValueError:
+            print("Inserire un numero di porta valido.")
+        except KeyboardInterrupt:
+            print("\nExiting...")
+            break
+
+
+-- da finire di commentare e finire di vedere il funzionamento 
